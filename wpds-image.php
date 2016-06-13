@@ -76,18 +76,7 @@ class Tribe_Image_Widget extends WP_Widget {
 		$instance = wp_parse_args( (array) $instance, self::get_defaults() );
 		if ( !empty( $instance['imageurl'] ) || !empty( $instance['attachment_id'] ) ) {
 
-			$instance['title'] = apply_filters( 'widget_title', empty( $instance['title'] ) ? '' : $instance['title'] );
-			$instance['description'] = apply_filters( 'widget_text', $instance['description'], $args, $instance );
-			$instance['link'] = apply_filters( 'image_widget_image_link', esc_url( $instance['link'] ), $args, $instance );
-			$instance['linkid'] = apply_filters( 'image_widget_image_link_id', esc_attr( $instance['linkid'] ), $args, $instance );
-			$instance['linktarget'] = apply_filters( 'image_widget_image_link_target', esc_attr( $instance['linktarget'] ), $args, $instance );
-			$instance['width'] = apply_filters( 'image_widget_image_width', abs( $instance['width'] ), $args, $instance );
-			$instance['height'] = apply_filters( 'image_widget_image_height', abs( $instance['height'] ), $args, $instance );
-			$instance['maxwidth'] = apply_filters( 'image_widget_image_maxwidth', esc_attr( $instance['maxwidth'] ), $args, $instance );
-			$instance['maxheight'] = apply_filters( 'image_widget_image_maxheight', esc_attr( $instance['maxheight'] ), $args, $instance );
-			$instance['align'] = apply_filters( 'image_widget_image_align', esc_attr( $instance['align'] ), $args, $instance );
-			$instance['alt'] = apply_filters( 'image_widget_image_alt', esc_attr( $instance['alt'] ), $args, $instance );
-			$instance['rel'] = apply_filters( 'image_widget_image_rel', esc_attr( $instance['rel'] ), $args, $instance );
+			$instance['padding'] = apply_filters( 'image_widget_image_maxwidth', esc_attr( $instance['padding'] ), $args, $instance );
 
 			if ( !defined( 'IMAGE_WIDGET_COMPATIBILITY_TEST' ) ) {
 				$instance['attachment_id'] = ( $instance['attachment_id'] > 0 ) ? $instance['attachment_id'] : $instance['image'];
@@ -113,24 +102,10 @@ class Tribe_Image_Widget extends WP_Widget {
 	public function update( $new_instance, $old_instance ) {
 		$instance = $old_instance;
 		$new_instance = wp_parse_args( (array) $new_instance, self::get_defaults() );
-		$instance['title'] = strip_tags($new_instance['title']);
-		if ( current_user_can('unfiltered_html') ) {
-			$instance['description'] = $new_instance['description'];
-		} else {
-			$instance['description'] = wp_filter_post_kses($new_instance['description']);
-		}
-		$instance['link'] = $new_instance['link'];
-		$instance['linkid'] = $new_instance['linkid'];
-		$instance['linktarget'] = $new_instance['linktarget'];
-		$instance['width'] = abs( $new_instance['width'] );
-		$instance['height'] =abs( $new_instance['height'] );
-		$instance['maxheight'] =abs( $new_instance['maxheight'] );
+		$instance['padding'] = $new_instance['padding'];
 		if ( !defined( 'IMAGE_WIDGET_COMPATIBILITY_TEST' ) ) {
 			$instance['size'] = $new_instance['size'];
 		}
-		$instance['align'] = $new_instance['align'];
-		$instance['alt'] = $new_instance['alt'];
-		$instance['rel'] = $new_instance['rel'];
 
 		// Reverse compatibility with $image, now called $attachement_id
 		if ( !defined( 'IMAGE_WIDGET_COMPATIBILITY_TEST' ) && $new_instance['attachment_id'] > 0 ) {
@@ -192,20 +167,9 @@ class Tribe_Image_Widget extends WP_Widget {
 	private static function get_defaults() {
 
 		$defaults = array(
-			'title' => '',
-			'description' => '',
-			'link' => '',
-			'linkid' => '',
-			'linktarget' => '',
-			'width' => 0,
-			'height' => 0,
-			'maxwidth' => '100%',
-			'maxheight' => '180',
 			'image' => 0, // reverse compatible - now attachement_id
 			'imageurl' => '', // reverse compatible.
-			'align' => 'none',
-			'alt' => '',
-			'rel' => '',
+			'padding' => 10,
 		);
 
 		if ( !defined( 'IMAGE_WIDGET_COMPATIBILITY_TEST' ) ) {
@@ -232,57 +196,16 @@ class Tribe_Image_Widget extends WP_Widget {
 
 		$output = '';
 
-		if ( $include_link && !empty( $instance['link'] ) ) {
-			$attr = array(
-				'href' => $instance['link'],
-				'id' => $instance['linkid'],
-				'target' => $instance['linktarget'],
-				'class' => 	$this->widget_options['classname'].'-image-link',
-				'title' => ( !empty( $instance['alt'] ) ) ? $instance['alt'] : $instance['title'],
-				'rel' => $instance['rel'],
-			);
-			$attr = apply_filters('image_widget_link_attributes', $attr, $instance );
-			$attr = array_map( 'esc_attr', $attr );
-			$output = '<a';
-			foreach ( $attr as $name => $value ) {
-				$output .= sprintf( ' %s="%s"', $name, $value );
-			}
-			$output .= '>';
-		}
-
-		$size = $this->get_image_size( $instance );
-		if ( is_array( $size ) ) {
-			$instance['width'] = $size[0];
-			$instance['height'] = $size[1];
-		} elseif ( !empty( $instance['attachment_id'] ) ) {
-			//$instance['width'] = $instance['height'] = 0;
-			$image_details = wp_get_attachment_image_src( $instance['attachment_id'], $size );
+		if ( !empty( $instance['attachment_id'] ) ) {
+			$image_details = wp_get_attachment_image_src( $instance['attachment_id'], 'full' );
 			if ($image_details) {
 				$instance['imageurl'] = $image_details[0];
-				$instance['width'] = $image_details[1];
-				$instance['height'] = $image_details[2];
 			}
 		}
-		$instance['width'] = abs( $instance['width'] );
-		$instance['height'] = abs( $instance['height'] );
 
 		$attr = array();
-		$attr['alt'] = ( !empty( $instance['alt'] ) ) ? $instance['alt'] : $instance['title'];
-		if (is_array($size)) {
-			$attr['class'] = 'attachment-'.join('x',$size);
-		} else {
-			$attr['class'] = 'attachment-'.$size;
-		}
-		$attr['style'] = '';
-		if (!empty($instance['maxwidth'])) {
-			$attr['style'] .= "max-width: {$instance['maxwidth']};";
-		}
-		if (!empty($instance['maxheight'])) {
-			$attr['style'] .= "max-height: {$instance['maxheight']}px;";
-		}
-		if (!empty($instance['align']) && $instance['align'] != 'none') {
-			$attr['class'] .= " align{$instance['align']}";
-		}
+		$attr['alt'] = isset($instance['imageurl']) ? basename($instance['imageurl']) : $instance['attachment_id'];
+		$attr['style'] = 'max-width: 100%; max-height: 100%;';
 		$attr = apply_filters( 'image_widget_image_attributes', $attr, $instance );
 
 		// If there is an imageurl, use it to render the image. Eventually we should kill this and simply rely on attachment_ids.
@@ -290,39 +213,16 @@ class Tribe_Image_Widget extends WP_Widget {
 			// If all we have is an image src url we can still render an image.
 			$attr['src'] = $instance['imageurl'];
 			$attr = array_map( 'esc_attr', $attr );
-			$hwstring = image_hwstring( $instance['width'], $instance['height'] );
 			$output .= rtrim("<img");
 			foreach ( $attr as $name => $value ) {
 				$output .= sprintf( ' %s="%s"', $name, $value );
 			}
 			$output .= ' />';
 		} elseif( abs( $instance['attachment_id'] ) > 0 ) {
-			$output .= wp_get_attachment_image($instance['attachment_id'], $size, false, $attr);
-		}
-
-		if ( $include_link && !empty( $instance['link'] ) ) {
-			$output .= '</a>';
+			$output .= wp_get_attachment_image($instance['attachment_id'], 'full', false, $attr);
 		}
 
 		return $output;
-	}
-
-	/**
-	 * Assesses the image size in case it has not been set or in case there is a mismatch.
-	 *
-	 * @param $instance
-	 * @return array|string
-	 */
-	private function get_image_size( $instance ) {
-		if ( !empty( $instance['size'] ) && $instance['size'] != self::CUSTOM_IMAGE_SIZE_SLUG ) {
-			$size = $instance['size'];
-		} elseif ( isset( $instance['width'] ) && is_numeric($instance['width']) && isset( $instance['height'] ) && is_numeric($instance['height']) ) {
-			//$size = array(abs($instance['width']),abs($instance['height']));
-			$size = array($instance['width'],$instance['height']);
-		} else {
-			$size = 'full';
-		}
-		return $size;
 	}
 
 	/**

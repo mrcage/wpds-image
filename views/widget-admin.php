@@ -20,6 +20,6 @@ if ( !defined('ABSPATH') )
 <br clear="all" />
 
 <div id="<?php echo $this->get_field_id('fields'); ?>" <?php if ( empty($instance['attachment_id']) && empty($instance['imageurl']) ) { ?>style="display:none;"<?php } ?>>
-	<p><label for="<?php echo $this->get_field_id('maxheight'); ?>"><?php _e('Maximal height', 'wpds-image'); ?>:</label>
-		<input class="widefat" id="<?php echo $this->get_field_id('maxheight'); ?>" name="<?php echo $this->get_field_name('maxheight'); ?>" type="number" value="<?php echo esc_attr(strip_tags($instance['maxheight'])); ?>" /></p>
+	<p><label for="<?php echo $this->get_field_id('padding'); ?>"><?php _e('Padding', 'wpds-image'); ?>:</label>
+		<input class="widefat" id="<?php echo $this->get_field_id('padding'); ?>" name="<?php echo $this->get_field_name('padding'); ?>" type="number" value="<?php echo esc_attr(strip_tags($instance['padding'])); ?>" /></p>
 </div>
