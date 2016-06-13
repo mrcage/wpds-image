@@ -4,7 +4,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: Mon Jun 13 2016 15:06:32 GMT+0200 (W. Europe Standard "
 "Time)\n"
-"PO-Revision-Date: Mon Jun 13 2016 15:35:53 GMT+0200 (W. Europe Standard "
+"PO-Revision-Date: Mon Jun 13 2016 23:37:23 GMT+0200 (W. Europe Standard "
 "Time)\n"
 "Last-Translator: nicolas <mail@nicu.ch>\n"
 "Language-Team: \n"
@@ -24,9 +24,9 @@ msgstr ""
 "X-Generator: Loco - https://localise.biz/\n"
 "X-Loco-Target-Locale: de_DE"
 
-#: ../wpds-image.php:37
-msgid "Showcase a single image."
-msgstr "Ein einzelnes Bild anzeigen."
+#: ../views/widget-admin.php:23
+msgid "Padding"
+msgstr "Randabstand"
 
 #. Name of the plugin
 msgid "WPDS Image Widget"
@@ -44,6 +44,10 @@ msgstr ""
 msgid "Nicolas Perrenoud"
 msgstr "Nicolas Perrenoud"
 
+#: ../wpds-image.php:37
+msgid "Showcase a single image."
+msgstr "Ein einzelnes Bild anzeigen."
+
 #: ../wpds-image.php:39
 msgid "Image Widget"
 msgstr "Bild"
@@ -55,7 +59,3 @@ msgstr "Wählen Sie ein Bild"
 #: ../wpds-image.php:64
 msgid "Insert Into Widget"
 msgstr "In Widget einfügen"
-
-#: ../views/widget-admin.php:23
-msgid "Maximal height"
-msgstr "Maximale Höhe"
