@@ -13,7 +13,7 @@ $before_widget = str_replace('<div>', '', $before_widget);
 echo $before_widget;
 
 $padding = intval($instance['padding']);
-echo '<div style="height: 100%; padding: ' . $padding . 'px; text-align: center;">';
+echo '<div style="height: ' . (100 - (2*$padding)) . '%; text-align: center;">';
 echo '<div style="height: 100%; background-image:url(\'' . $instance['imageurl'] . ' \'); background-size: contain; background-repeat: no-repeat; background-position: center center;"></div>';
 echo '</div>';
 
